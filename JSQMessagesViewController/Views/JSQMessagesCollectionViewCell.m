@@ -29,7 +29,7 @@
 static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
 
 
-@interface JSQMessagesCollectionViewCell ()
+@interface JSQMessagesCollectionViewCell () <UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet JSQMessagesLabel *cellTopLabel;
 @property (weak, nonatomic) IBOutlet JSQMessagesLabel *messageBubbleTopLabel;
@@ -128,7 +128,8 @@ static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
     self.cellBottomLabel.textColor = [UIColor lightGrayColor];
 
     UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(jsq_handleTapGesture:)];
-    [self.textView addGestureRecognizer:tap];
+    [self addGestureRecognizer:tap];
+    tap.delegate = self;
     self.tapGestureRecognizer = tap;
 }
 
@@ -319,6 +320,7 @@ static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
 
     [mediaView setTranslatesAutoresizingMaskIntoConstraints:NO];
     mediaView.frame = self.messageBubbleContainerView.bounds;
+    mediaView.userInteractionEnabled = NO;
 
     [self.messageBubbleContainerView addSubview:mediaView];
     [self.messageBubbleContainerView jsq_pinAllEdgesOfSubview:mediaView];
@@ -387,8 +389,11 @@ static NSMutableSet *jsqMessagesCollectionViewCellActions = nil;
     if ([gestureRecognizer isKindOfClass:[UILongPressGestureRecognizer class]]) {
         return CGRectContainsPoint(self.messageBubbleContainerView.frame, touchPt);
     }
-    
-    return NO;
+
+    return YES;
 }
 
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(nonnull UIGestureRecognizer *)otherGestureRecognizer {
+    return YES;
+}
 @end
